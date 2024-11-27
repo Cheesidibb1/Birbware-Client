@@ -42,5 +42,14 @@
     <Image Include="..\..\..\..\Downloads\Birbware icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="server.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="user.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="wrench.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

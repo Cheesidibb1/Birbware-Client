@@ -141,6 +141,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Downloads\Birbware icon.ico" />
+    <Image Include="server.png" />
+    <Image Include="user.png" />
+    <Image Include="wrench.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
