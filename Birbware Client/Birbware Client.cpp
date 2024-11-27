@@ -1,4 +1,6 @@
 #include <windows.h>
+#include <string>
+#include "resource.h"  // Include the resource header for icon identifier
 
 // Window procedure function to handle events
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -12,8 +14,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         PAINTSTRUCT ps;
         HDC hdc = BeginPaint(hwnd, &ps);
-        // Display "Hello World" in the window
-        TextOut(hdc, 50, 50, L"Hello World", 11); // Use L"..." for wide characters
+        RECT clientRect;
+        GetClientRect(hwnd, &clientRect);
+        FillRect(hdc, &clientRect, (HBRUSH)(COLOR_WINDOW + 1));
         EndPaint(hwnd, &ps);
         return 0;
     }
@@ -21,33 +24,31 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-// Entry point for a Windows GUI application (not `main`, but `WinMain`)
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    // Step 1: Initialize the Window Class
-    const wchar_t* className = L"SimpleWindowClass";  // Class name as a wide-character string (L"SimpleWindowClass")
-    WNDCLASS wc = { 0 };  // Initialize all members to zero
+    // Step 1: Initialize the window class
+    const wchar_t* className = L"MyWindowClass";
+    WNDCLASS wc = { 0 };
+    wc.lpfnWndProc = WindowProc;  // Set WindowProc as the callback function
+    wc.hInstance = hInstance;
+    wc.lpszClassName = className;
 
-    wc.lpfnWndProc = WindowProc;  // Set the window procedure
-    wc.hInstance = hInstance;     // Use the provided hInstance
-    wc.lpszClassName = className; // Assign the class name (wide-character string)
-
-    if (!RegisterClass(&wc)) {  // Register the window class with Windows OS
+    if (!RegisterClass(&wc)) {
         MessageBox(NULL, L"Window class registration failed!", L"Error", MB_ICONERROR);
         return 0;
     }
 
-    // Step 2: Create the Window
+    // Step 2: Create the window
     HWND hwnd = CreateWindowEx(
-        0,                          // Optional window styles
-        className,                  // Window class name (wide-character string)
-        L"Birbware Client",  // Window title (wide-character string)
-        WS_OVERLAPPEDWINDOW,        // Window style (default style)
-        CW_USEDEFAULT, CW_USEDEFAULT, 700, 650,  // Size and position of the window
-        NULL,                       // Parent window (NULL means no parent)
-        NULL,                       // Menu (NULL means no menu)
-        hInstance,                  // Instance handle
-        NULL                        // Additional application data
+        0,
+        className,
+        L"My Application",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, 700, 650,
+        NULL,
+        NULL,
+        hInstance,
+        NULL
     );
 
     if (hwnd == NULL) {
@@ -55,15 +56,26 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         return 0;
     }
 
-    ShowWindow(hwnd, nCmdShow);  // Show the window
-    UpdateWindow(hwnd);          // Update the window
-
-    // Step 3: Event loop
-    MSG msg = { 0 };
-    while (GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);   // Translate keyboard messages
-        DispatchMessage(&msg);    // Dispatch messages to the window procedure
+    // Step 3: Load the icon from the resources
+    HICON hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));  // Load the icon using the identifier defined in resource.h
+    if (hIcon) {
+        SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)hIcon);  // Set the big icon
+        SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);  // Set the small icon
+    }
+    else {
+        MessageBox(hwnd, L"Failed to load icon", L"Error", MB_ICONERROR);  // Show error if loading fails
     }
 
-    return (int)msg.wParam;  // Return exit code
+    // Step 4: Show and update the window
+    ShowWindow(hwnd, nCmdShow);
+    UpdateWindow(hwnd);
+
+    // Step 5: Enter the message loop
+    MSG msg = { 0 };
+    while (GetMessage(&msg, NULL, 0, 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    return (int)msg.wParam;
 }
