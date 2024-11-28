@@ -1,5 +1,4 @@
 #include <windows.h>
-#include <string>
 #include <gdiplus.h>   // GDI+ for loading PNG images
 #include "resource.h"  // Include the resource header for identifiers
 #pragma comment(lib, "gdiplus.lib")  // Link to the GDI+ library
@@ -10,7 +9,7 @@ using namespace Gdiplus;
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     static HWND hButton1, hButton2, hButton3;  // Buttons for three icons
-    static ULONG_PTR gdiplusToken;
+    static ULONG_PTR gdiplusToken;  // GDI+ token
 
     switch (uMsg)
     {
@@ -29,28 +28,28 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             350, 600, 100, 100, hwnd, (HMENU)3, GetModuleHandle(NULL), NULL);
 
         // Load PNG images using GDI+ from resources
-        HBITMAP hServerBitmap = NULL, hWrenchBitmap = NULL, hUserBitmap = NULL;
-
-        // Load the PNG resources using GDI+
         Bitmap* pServerBitmap = Bitmap::FromResource(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_SERVER));
         if (pServerBitmap && pServerBitmap->GetLastStatus() == Ok) {
+            HBITMAP hServerBitmap = NULL;
             pServerBitmap->GetHBITMAP(Color(255, 255, 255), &hServerBitmap);
             SendMessage(hButton1, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hServerBitmap);
         }
 
         Bitmap* pWrenchBitmap = Bitmap::FromResource(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_WRENCH));
         if (pWrenchBitmap && pWrenchBitmap->GetLastStatus() == Ok) {
+            HBITMAP hWrenchBitmap = NULL;
             pWrenchBitmap->GetHBITMAP(Color(255, 255, 255), &hWrenchBitmap);
             SendMessage(hButton2, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hWrenchBitmap);
         }
 
         Bitmap* pUserBitmap = Bitmap::FromResource(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_USER));
         if (pUserBitmap && pUserBitmap->GetLastStatus() == Ok) {
+            HBITMAP hUserBitmap = NULL;
             pUserBitmap->GetHBITMAP(Color(255, 255, 255), &hUserBitmap);
             SendMessage(hButton3, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hUserBitmap);
         }
 
-        // Clean up
+        // Clean up GDI+ bitmap objects
         delete pServerBitmap;
         delete pWrenchBitmap;
         delete pUserBitmap;
